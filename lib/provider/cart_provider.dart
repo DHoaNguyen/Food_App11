@@ -5,7 +5,6 @@ import 'package:monkey_app_demo/model/cart_model.dart';
 
 class CartProvider with ChangeNotifier {
   List<CartModel> cartList = [];
-  CartModel cartModel;
   Future getCartData() async {
     List<CartModel> newCartList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -15,14 +14,21 @@ class CartProvider with ChangeNotifier {
         .get();
     querySnapshot.docs.forEach((element) {
       CartModel.fromDocument(element);
-      newCartList.add(cartModel);
+      newCartList.add(CartModel.fromDocument(element));
     });
     cartList = newCartList;
-    print(cartList.length);
     notifyListeners();
   }
 
   List<CartModel> get getCartList {
     return cartList;
+  }
+
+  int subTotal() {
+    int subTotal = 0;
+    cartList.forEach((element) {
+      subTotal += element.productPrice * element.productQuantity;
+    });
+    return subTotal;
   }
 }

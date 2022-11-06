@@ -23,12 +23,23 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     cartProvider.getCartData();
-    //   print(cartProvider.cartList.map((e) => e.productId).toList());
+    // print(cartProvider.cartList.map((e) => e.productId).toList());
+    //print(cartProvider.cartList[0].productName);
+    //   print(cartProvider.cartModel.productId);
     //  print(cartProvider.cartModel.productId);
-    print(cartProvider.cartModel.productId);
+    int subTotal = cartProvider.subTotal();
+    int shipFee = 15000;
+    int discount = 0;
+    int value = subTotal - discount;
 
-    // int subTotal = cartProvider.subTotal();
-    // print(subTotal);
+    int totalPrice = value += shipFee;
+
+    if (cartProvider.cartList.isEmpty) {
+      setState(() {
+        shipFee = totalPrice = 0;
+      });
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -70,62 +81,50 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                           Container(
                             width: double.infinity,
                             color: AppColor.placeholderBg,
-                            child: StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("cart")
-                                    .doc(FirebaseAuth.instance.currentUser.uid)
-                                    .collection("userCart")
-                                    .snapshots(),
-                                builder: ((context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  }
-                                  return snapshot.data.docs.isEmpty
-                                      ? Center(
-                                          child: Text(
-                                            "Giỏ hàng hiện tại trống",
-                                            style: Helper.getTheme(context)
-                                                .headline5,
-                                          ),
-                                        )
-                                      : ListView.builder(
-                                          shrinkWrap: true,
-                                          physics: BouncingScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            dynamic data =
-                                                snapshot.data.docs[index];
-                                            dynamic itemId =
-                                                snapshot.data.docs[index].id;
-                                            return Dismissible(
-                                              key: Key(itemId[index]),
-                                              onDismissed:
-                                                  (DismissDirection direction) {
-                                                FirebaseFirestore.instance
-                                                    .collection("cart")
-                                                    .doc(FirebaseAuth.instance
-                                                        .currentUser.uid)
-                                                    .collection("userCart")
-                                                    .doc(data["productId"])
-                                                    .delete();
-                                              },
-                                              background: Container(
-                                                  color: AppColor.orange),
-                                              secondaryBackground: Container(
-                                                  color: Colors.green),
-                                              child: BurgerCard(
-                                                productId: data["productId"],
-                                                name: data["productName"],
-                                                price: data["productPrice"],
-                                                quantity:
-                                                    data["productQuantity"],
-                                              ),
-                                            );
-                                          },
-                                          itemCount: snapshot.data.docs.length,
-                                        );
-                                })),
+                            child: cartProvider.cartList.isEmpty
+                                ? Center(
+                                    child: Text(
+                                    "Giỏ hàng hiện tại trống",
+                                    style: Helper.getTheme(context)
+                                        .headline4
+                                        .copyWith(color: AppColor.primary),
+                                  ))
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      var data =
+                                          cartProvider.getCartList[index];
+                                      dynamic itemId = cartProvider
+                                          .getCartList[index].productId;
+                                      return Dismissible(
+                                        key: Key(itemId[index]),
+                                        onDismissed:
+                                            (DismissDirection direction) {
+                                          setState(() async {
+                                            await FirebaseFirestore.instance
+                                                .collection("cart")
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser.uid)
+                                                .collection("userCart")
+                                                .doc(data.productId)
+                                                .delete();
+                                          });
+                                        },
+                                        background:
+                                            Container(color: AppColor.orange),
+                                        secondaryBackground:
+                                            Container(color: Colors.green),
+                                        child: BurgerCard(
+                                          productId: data.productId,
+                                          name: data.productName,
+                                          price: data.productPrice,
+                                          quantity: data.productQuantity,
+                                        ),
+                                      );
+                                    },
+                                    itemCount: cartProvider.getCartList.length,
+                                  ),
                           ),
                         ],
                       ),
@@ -183,7 +182,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               ),
                             ),
                             Text(
-                              "22",
+                              "${subTotal}K",
                               style:
                                   Helper.getTheme(context).headline3.copyWith(
                                         color: AppColor.orange,
@@ -203,7 +202,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               ),
                             ),
                             Text(
-                              "\$2",
+                              "${shipFee}K",
                               style:
                                   Helper.getTheme(context).headline3.copyWith(
                                         color: AppColor.orange,
@@ -225,12 +224,12 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                "Total",
+                                "Tổng cộng",
                                 style: Helper.getTheme(context).headline3,
                               ),
                             ),
                             Text(
-                              "\$70",
+                              "${totalPrice}K",
                               style:
                                   Helper.getTheme(context).headline3.copyWith(
                                         color: AppColor.orange,
@@ -301,7 +300,7 @@ class BurgerCard extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              "$_name x $_quantity",
+              "$_name x $_quantity ",
               style: TextStyle(
                 color: AppColor.primary,
                 fontSize: 16,
@@ -309,7 +308,7 @@ class BurgerCard extends StatelessWidget {
             ),
           ),
           Text(
-            "${_price * _quantity}",
+            "${_price * _quantity}K",
             style: TextStyle(
               color: AppColor.primary,
               fontSize: 16,
