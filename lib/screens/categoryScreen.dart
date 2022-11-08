@@ -5,7 +5,7 @@ import 'package:monkey_app_demo/screens/individualItem.dart';
 import 'package:monkey_app_demo/utils/helper.dart';
 import 'package:monkey_app_demo/widgets/searchBar.dart';
 
-class CategoryScreen extends StatelessWidget {
+class CategoryScreen extends StatefulWidget {
   static const routeName = "/categoryScreen";
   final String id;
   final String collection;
@@ -16,6 +16,11 @@ class CategoryScreen extends StatelessWidget {
     @required this.collection,
   }) : super(key: key);
 
+  @override
+  State<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,8 +61,8 @@ class CategoryScreen extends StatelessWidget {
                   child: FutureBuilder(
                     future: FirebaseFirestore.instance
                         .collection("category")
-                        .doc(id)
-                        .collection("Bún")
+                        .doc(widget.id)
+                        .collection(widget.collection)
                         .get(),
                     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (!snapshot.hasData) {

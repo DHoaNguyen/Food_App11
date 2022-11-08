@@ -7,9 +7,7 @@ class ImgDetail extends StatelessWidget {
     @required Image image,
   })  : _image = image,
         super(key: key);
-
   final Image _image;
-
   @override
   Widget build(BuildContext context) {
     return Stack(

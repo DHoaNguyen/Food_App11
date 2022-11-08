@@ -1,15 +1,22 @@
+import 'dart:convert';
+
 import 'package:clip_shadow/clip_shadow.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:monkey_app_demo/const/colors.dart';
+import 'package:monkey_app_demo/model/cart_model.dart';
+import 'package:monkey_app_demo/provider/favorite_provider.dart';
 import 'package:monkey_app_demo/screens/individualItem.dart';
 import 'package:monkey_app_demo/screens/myOrderScreen.dart';
 import 'package:monkey_app_demo/utils/helper.dart';
+import 'package:provider/provider.dart';
 
 class SubImgDetail extends StatefulWidget {
   const SubImgDetail(
       {Key key,
+      @required String image,
       @required String name,
       @required int price,
       @required int oldPrice,
@@ -21,6 +28,7 @@ class SubImgDetail extends StatefulWidget {
         _rate = rate,
         _price = price,
         _description = description,
+        _image = image,
         _productId = productId,
         super(key: key);
   final String _name;
@@ -29,15 +37,41 @@ class SubImgDetail extends StatefulWidget {
   final double _rate;
   final String _description;
   final String _productId;
+  final String _image;
 
   @override
   State<SubImgDetail> createState() => _SubImgDetailState();
 }
 
 class _SubImgDetailState extends State<SubImgDetail> {
+  bool isFavorite = false;
+
   int quantity = 1;
+
   @override
   Widget build(BuildContext context) {
+    FavoriteProvider favoriteProvider = Provider.of<FavoriteProvider>(context);
+
+    FirebaseFirestore.instance
+        .collection("favorite")
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .collection("userFavorite")
+        .doc(widget._productId)
+        .get()
+        .then(
+          (value) => {
+            if (this.mounted)
+              {
+                if (value.exists)
+                  {
+                    setState(() {
+                      isFavorite = value.get("productFavorite");
+                    })
+                  }
+              }
+          },
+        );
+
     return SafeArea(
       child: Column(
         children: [
@@ -206,93 +240,9 @@ class _SubImgDetailState extends State<SubImgDetail> {
                         SizedBox(
                           height: 10,
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(
-                        //       horizontal: 20),
-                        //   child: Container(
-                        //     height: 50,
-                        //     width: double.infinity,
-                        //     padding: const EdgeInsets.only(
-                        //         left: 30, right: 10),
-                        //     decoration: ShapeDecoration(
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius:
-                        //             BorderRadius.circular(5),
-                        //       ),
-                        //       color: AppColor.placeholderBg,
-                        //     ),
-                        //     child: DropdownButtonHideUnderline(
-                        //       child: DropdownButton(
-                        //         hint: Row(
-                        //           children: [
-                        //             Text(
-                        //                 "-Select the size of portion-"),
-                        //           ],
-                        //         ),
-                        //         value: "default",
-                        //         onChanged: (_) {},
-                        //         items: [
-                        //           DropdownMenuItem(
-                        //             child: Text(
-                        //                 "-Select the size of portion-"),
-                        //             value: "default",
-                        //           ),
-                        //         ],
-                        //         icon: Image.asset(
-                        //           Helper.getAssetName(
-                        //             "dropdown.png",
-                        //             "virtual",
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                         SizedBox(
                           height: 5,
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(
-                        //       horizontal: 20),
-                        //   child: Container(
-                        //     height: 50,
-                        //     width: double.infinity,
-                        //     padding: const EdgeInsets.only(
-                        //         left: 30, right: 10),
-                        //     decoration: ShapeDecoration(
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius:
-                        //             BorderRadius.circular(5),
-                        //       ),
-                        //       color: AppColor.placeholderBg,
-                        //     ),
-                        //     child: DropdownButtonHideUnderline(
-                        //       child: DropdownButton(
-                        //         hint: Row(
-                        //           children: [
-                        //             Text(
-                        //                 "-Select the ingredients-"),
-                        //           ],
-                        //         ),
-                        //         value: "default",
-                        //         onChanged: (_) {},
-                        //         items: [
-                        //           DropdownMenuItem(
-                        //             child: Text(
-                        //                 "-Select the ingredients-"),
-                        //             value: "default",
-                        //           ),
-                        //         ],
-                        //         icon: Image.asset(
-                        //           Helper.getAssetName(
-                        //             "dropdown.png",
-                        //             "virtual",
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                         SizedBox(
                           height: 15,
                         ),
@@ -457,8 +407,6 @@ class _SubImgDetailState extends State<SubImgDetail> {
                                                   "productRate": widget._rate,
                                                   "productQuantity": quantity
                                                 });
-                                                // Navigator.of(context).pushNamed(
-                                                //     MyOrderScreen.routeName);
                                               },
                                               child: Row(
                                                 mainAxisAlignment:
@@ -531,16 +479,35 @@ class _SubImgDetailState extends State<SubImgDetail> {
                         ),
                       ],
                       child: Container(
-                        width: 60,
-                        height: 60,
-                        color: Colors.white,
-                        child: Image.asset(
-                          Helper.getAssetName(
-                            "fav.png",
-                            "virtual",
-                          ),
-                        ),
-                      ),
+                          width: 60,
+                          height: 60,
+                          color: Colors.white,
+                          child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isFavorite = !isFavorite;
+                                  if (isFavorite == true) {
+                                    favoriteProvider.favorite(
+                                      productId: widget._productId,
+                                      productFavorite: true,
+                                    );
+                                  } else if (isFavorite == false) {
+                                    FirebaseFirestore.instance
+                                        .collection("favorite")
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser.uid)
+                                        .collection("userFavorite")
+                                        .doc(widget._productId)
+                                        .delete();
+                                  }
+                                });
+                              },
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite_outlined
+                                    : Icons.favorite_border_outlined,
+                                color: AppColor.orange,
+                              ))),
                     ),
                   ),
                 )

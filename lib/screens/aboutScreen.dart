@@ -60,7 +60,7 @@ class AboutScreen extends StatelessWidget {
             bottom: 0,
             left: 0,
             child: CustomNavBar(
-              cart: true,
+              favorite: true,
             ),
           ),
         ],

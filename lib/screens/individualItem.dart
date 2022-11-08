@@ -37,6 +37,7 @@ class IndividualItem extends StatelessWidget {
                   children: [
                     ImgDetail(image: image),
                     SubImgDetail(
+                        image: image.toString(),
                         productId: productId,
                         description: description,
                         name: name,

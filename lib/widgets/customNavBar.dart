@@ -1,5 +1,6 @@
 import 'package:clip_shadow/clip_shadow.dart';
 import 'package:flutter/material.dart';
+import 'package:monkey_app_demo/screens/myFavoriteScreen.dart';
 import 'package:monkey_app_demo/screens/myOrderScreen.dart';
 
 import '../const/colors.dart';
@@ -12,7 +13,7 @@ import '../utils/helper.dart';
 
 class CustomNavBar extends StatelessWidget {
   final bool home;
-  final bool cart;
+  final bool favorite;
   final bool offer;
   final bool profile;
   final bool more;
@@ -20,7 +21,7 @@ class CustomNavBar extends StatelessWidget {
   const CustomNavBar(
       {Key key,
       this.home = false,
-      this.cart = false,
+      this.favorite = false,
       this.offer = false,
       this.profile = false,
       this.more = false})
@@ -57,21 +58,21 @@ class CustomNavBar extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        if (!cart) {
+                        if (!favorite) {
                           Navigator.of(context)
-                              .pushReplacementNamed(MyOrderScreen.routeName);
+                              .pushReplacementNamed(MyFavoriteScreen.routeName);
                         }
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          cart
+                          favorite
                               ? Image.asset(
                                   Helper.getAssetName(
-                                      "cart_filled.png", "virtual"),
+                                      "fav_filled.png", "virtual"),
                                 )
                               : Image.asset(
-                                  Helper.getAssetName("cart2.png", "virtual"),
+                                  Helper.getAssetName("fav1.png", "virtual"),
                                 ),
                         ],
                       ),

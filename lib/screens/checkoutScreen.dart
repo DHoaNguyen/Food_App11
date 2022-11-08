@@ -7,6 +7,19 @@ import 'package:monkey_app_demo/widgets/customTextInput.dart';
 
 class CheckoutScreen extends StatelessWidget {
   static const routeName = "/checkoutScreen";
+  const CheckoutScreen({
+    Key key,
+    @required this.subTotal,
+    @required this.shipFee,
+    @required this.discount,
+    @required this.totalPrice,
+  }) : super(key: key);
+
+  final int subTotal;
+  final int shipFee;
+  final int discount;
+  final int totalPrice;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +41,7 @@ class CheckoutScreen extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        "Checkout",
+                        "Thanh toán",
                         style: Helper.getTheme(context).headline5,
                       ),
                     ),
@@ -39,7 +52,7 @@ class CheckoutScreen extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text("Delivery Address"),
+                  child: Text("Địa chỉ"),
                 ),
                 SizedBox(
                   height: 10,
@@ -50,22 +63,10 @@ class CheckoutScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        width: Helper.getScreenWidth(context) * 0.4,
+                        width: Helper.getScreenWidth(context) * 0.8,
                         child: Text(
-                          "653 Nostrand Ave., Brooklyn, NY 11216",
+                          "180/27 Nguyễn Hữu Cảnh ",
                           style: Helper.getTheme(context).headline3,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(ChangeAddressScreen.routeName);
-                        },
-                        child: Text(
-                          "Change",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
                         ),
                       ),
                     ],
@@ -87,191 +88,18 @@ class CheckoutScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Payment method"),
-                      TextButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              isScrollControlled: true,
-                              isDismissible: false,
-                              context: context,
-                              builder: (context) {
-                                return Container(
-                                  height: Helper.getScreenHeight(context) * 0.7,
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            icon: Icon(
-                                              Icons.clear,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "Add Credit/Debit Card",
-                                              style: Helper.getTheme(context)
-                                                  .headline3,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Divider(
-                                          color: AppColor.placeholder
-                                              .withOpacity(0.5),
-                                          thickness: 1.5,
-                                          height: 40,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: CustomTextInput(
-                                            hintText: "card Number"),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text("Expiry"),
-                                            SizedBox(
-                                              height: 50,
-                                              width: 100,
-                                              child: CustomTextInput(
-                                                hintText: "MM",
-                                                padding: const EdgeInsets.only(
-                                                    left: 35),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 50,
-                                              width: 100,
-                                              child: CustomTextInput(
-                                                hintText: "YY",
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: CustomTextInput(
-                                            hintText: "Security Code"),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: CustomTextInput(
-                                            hintText: "First Name"),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: CustomTextInput(
-                                            hintText: "Last Name"),
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(
-                                              width: Helper.getScreenWidth(
-                                                      context) *
-                                                  0.4,
-                                              child: Text(
-                                                  "You can remove this card at anytime"),
-                                            ),
-                                            Switch(
-                                              value: false,
-                                              onChanged: (_) {},
-                                              thumbColor:
-                                                  MaterialStateProperty.all(
-                                                AppColor.secondary,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: SizedBox(
-                                          height: 50,
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.add,
-                                                  ),
-                                                  SizedBox(width: 40),
-                                                  Text("Add Card"),
-                                                  SizedBox(width: 40),
-                                                ],
-                                              )),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              });
-                        },
-                        child: Row(
-                          children: [
-                            Icon(Icons.add),
-                            Text(
-                              "Add Card",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          ],
-                        ),
+                      Text("Phương thức thanh toán"),
+                      Row(
+                        children: [
+                          Icon(Icons.add, color: AppColor.orange),
+                          Text(
+                            "Thêm thẻ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.orange,
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),
@@ -280,7 +108,7 @@ class CheckoutScreen extends StatelessWidget {
                   widget: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Cash on delivery"),
+                      Text("Thanh toán bằng tiền mặt"),
                       Container(
                         width: 15,
                         height: 15,
@@ -296,78 +124,8 @@ class CheckoutScreen extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                PaymentCard(
-                  widget: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 40,
-                            child: Image.asset(
-                              Helper.getAssetName(
-                                "visa2.png",
-                                "real",
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text("**** **** **** 2187"),
-                        ],
-                      ),
-                      Container(
-                        width: 15,
-                        height: 15,
-                        decoration: ShapeDecoration(
-                          shape: CircleBorder(
-                            side: BorderSide(color: AppColor.orange),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
                 SizedBox(
                   height: 10,
-                ),
-                PaymentCard(
-                  widget: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 40,
-                            height: 30,
-                            child: Image.asset(
-                              Helper.getAssetName(
-                                "paypal.png",
-                                "real",
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text("johndoe@email.com"),
-                        ],
-                      ),
-                      Container(
-                        width: 15,
-                        height: 15,
-                        decoration: ShapeDecoration(
-                          shape: CircleBorder(
-                            side: BorderSide(color: AppColor.orange),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
                 ),
                 Container(
                   height: 10,
@@ -382,12 +140,18 @@ class CheckoutScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Sub Total"),
+                          Expanded(
+                            child: Text(
+                              "Tạm tính",
+                              style: Helper.getTheme(context).headline3,
+                            ),
+                          ),
                           Text(
-                            "\$68",
-                            style: Helper.getTheme(context).headline3,
+                            "${subTotal}K",
+                            style: Helper.getTheme(context).headline3.copyWith(
+                                  color: AppColor.orange,
+                                ),
                           )
                         ],
                       ),
@@ -395,12 +159,18 @@ class CheckoutScreen extends StatelessWidget {
                         height: 10,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Delivery Cost"),
+                          Expanded(
+                            child: Text(
+                              "Phí giao hàng",
+                              style: Helper.getTheme(context).headline3,
+                            ),
+                          ),
                           Text(
-                            "\$2",
-                            style: Helper.getTheme(context).headline3,
+                            "${shipFee}K",
+                            style: Helper.getTheme(context).headline3.copyWith(
+                                  color: AppColor.orange,
+                                ),
                           )
                         ],
                       ),
@@ -408,12 +178,18 @@ class CheckoutScreen extends StatelessWidget {
                         height: 10,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Discount"),
+                          Expanded(
+                            child: Text(
+                              "Mã giảm giá",
+                              style: Helper.getTheme(context).headline3,
+                            ),
+                          ),
                           Text(
-                            "-\$4",
-                            style: Helper.getTheme(context).headline3,
+                            "${discount}K",
+                            style: Helper.getTheme(context).headline3.copyWith(
+                                  color: AppColor.orange,
+                                ),
                           )
                         ],
                       ),
@@ -423,12 +199,19 @@ class CheckoutScreen extends StatelessWidget {
                         thickness: 2,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Total"),
+                          Expanded(
+                            child: Text(
+                              "Tổng cộng",
+                              style: Helper.getTheme(context).headline3,
+                            ),
+                          ),
                           Text(
-                            "\$66",
-                            style: Helper.getTheme(context).headline3,
+                            "${totalPrice}K",
+                            style: Helper.getTheme(context).headline3.copyWith(
+                                  color: AppColor.orange,
+                                  fontSize: 22,
+                                ),
                           )
                         ],
                       ),
@@ -462,20 +245,9 @@ class CheckoutScreen extends StatelessWidget {
                             context: context,
                             builder: (context) {
                               return Container(
-                                height: Helper.getScreenHeight(context) * 0.85,
+                                height: Helper.getScreenHeight(context) * 0.68,
                                 child: Column(
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          icon: Icon(Icons.clear),
-                                        ),
-                                      ],
-                                    ),
                                     Image.asset(
                                       Helper.getAssetName(
                                         "vector4.png",
@@ -486,7 +258,7 @@ class CheckoutScreen extends StatelessWidget {
                                       height: 20,
                                     ),
                                     Text(
-                                      "Thank You!",
+                                      "Thank You",
                                       style: TextStyle(
                                         color: AppColor.primary,
                                         fontWeight: FontWeight.w900,
@@ -497,7 +269,7 @@ class CheckoutScreen extends StatelessWidget {
                                       height: 10,
                                     ),
                                     Text(
-                                      "for your order",
+                                      "Chúng tôi rất cảm ơn vì bạn đã đặt hàng",
                                       style: Helper.getTheme(context)
                                           .headline4
                                           .copyWith(color: AppColor.primary),
@@ -509,7 +281,7 @@ class CheckoutScreen extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20.0),
                                       child: Text(
-                                          "Your order is now being processed. We will let you know once the order is picked from the outlet. Check the status of your order"),
+                                          "Đơn hàng của bạn sẽ được chúng tôi xử lý bạn có thể tiếp tục đặt hàng"),
                                     ),
                                     SizedBox(
                                       height: 20,
@@ -518,14 +290,14 @@ class CheckoutScreen extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 20,
                                       ),
-                                      child: SizedBox(
-                                        height: 50,
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text("Track My Order"),
-                                        ),
-                                      ),
+                                      // child: SizedBox(
+                                      //   height: 50,
+                                      //   width: double.infinity,
+                                      //   child: ElevatedButton(
+                                      //     onPressed: () {},
+                                      //     child: Text("Track My Order"),
+                                      //   ),
+                                      // ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -538,9 +310,9 @@ class CheckoutScreen extends StatelessWidget {
                                                   HomeScreen.routeName);
                                         },
                                         child: Text(
-                                          "Back To Home",
+                                          "Trở về trang chủ",
                                           style: TextStyle(
-                                            color: AppColor.primary,
+                                            color: AppColor.orange,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -551,7 +323,7 @@ class CheckoutScreen extends StatelessWidget {
                               );
                             });
                       },
-                      child: Text("Send Order"),
+                      child: Text("Đặt hàng"),
                     ),
                   ),
                 )

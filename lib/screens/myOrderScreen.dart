@@ -23,12 +23,8 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     cartProvider.getCartData();
-    // print(cartProvider.cartList.map((e) => e.productId).toList());
-    //print(cartProvider.cartList[0].productName);
-    //   print(cartProvider.cartModel.productId);
-    //  print(cartProvider.cartModel.productId);
     int subTotal = cartProvider.subTotal();
-    int shipFee = 15000;
+    int shipFee = 15;
     int discount = 0;
     int value = subTotal - discount;
 
@@ -98,7 +94,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                       dynamic itemId = cartProvider
                                           .getCartList[index].productId;
                                       return Dismissible(
-                                        key: Key(itemId[index]),
+                                        key: Key(itemId),
                                         onDismissed:
                                             (DismissDirection direction) {
                                           setState(() async {
@@ -242,13 +238,30 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                         SizedBox(
                           height: 50,
                           width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(CheckoutScreen.routeName);
-                            },
-                            child: Text("Đặt hàng"),
-                          ),
+                          child: cartProvider.cartList.isEmpty
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                "Bạn không thể đặt hàng khi giỏ hàng trống")));
+                                  },
+                                  child: Text("Đặt hàng"),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => CheckoutScreen(
+                                        discount: discount,
+                                        shipFee: shipFee,
+                                        subTotal: subTotal,
+                                        totalPrice: totalPrice,
+                                      ),
+                                    ));
+                                  },
+                                  child: Text("Đặt hàng"),
+                                ),
                         ),
                       ],
                     ),

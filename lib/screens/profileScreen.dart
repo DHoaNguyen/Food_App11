@@ -11,31 +11,21 @@ import 'package:monkey_app_demo/widgets/customNavBar.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = "/profileScreen";
-
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isEdit = false;
   User user = FirebaseAuth.instance.currentUser;
-  UserModel logginUser = UserModel();
+  final TextEditingController emailController = new TextEditingController();
+  final TextEditingController nameController = new TextEditingController();
+  final TextEditingController addressController = new TextEditingController();
+  final TextEditingController passwordController = new TextEditingController();
+
   Future<void> logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacementNamed(LandingScreen.routeName);
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(user.uid)
-        .get()
-        .then((value) {
-      this.logginUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
   }
 
   @override
@@ -58,7 +48,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    isEdit = true;
+                                  });
+                                },
                                 icon: Icon(Icons.mode_edit_outline))
                           ],
                         ),
@@ -139,10 +133,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(
                           height: 50,
                           width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text("Lưu"),
-                          ),
+                          child: isEdit
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isEdit = false;
+                                    });
+                                  },
+                                  child: Text("Lưu"),
+                                )
+                              : Text(""),
                         )
                       ],
                     ),
@@ -198,8 +198,8 @@ class CustomFormImput extends StatelessWidget {
             bottom: 10,
           ),
         ),
-        obscureText: _isPassword,
         initialValue: _value,
+        obscureText: _isPassword,
         style: TextStyle(
           fontSize: 14,
         ),

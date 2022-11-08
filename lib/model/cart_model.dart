@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +12,15 @@ class CartModel {
       @required this.productPrice,
       @required this.productQuantity});
   factory CartModel.fromDocument(QueryDocumentSnapshot doc) {
+    return CartModel(
+      productId: doc["productId"],
+      productName: doc["productName"],
+      productPrice: doc["productPrice"],
+      productQuantity: doc["productQuantity"],
+    );
+  }
+
+  factory CartModel.fromJson(Map<String, dynamic> doc) {
     return CartModel(
       productId: doc["productId"],
       productName: doc["productName"],
