@@ -6,8 +6,8 @@ import 'package:monkey_app_demo/provider/cart_provider.dart';
 import 'package:monkey_app_demo/provider/favorite_provider.dart';
 import 'package:monkey_app_demo/screens/changeAddressScreen.dart';
 import 'package:monkey_app_demo/screens/myFavoriteScreen.dart';
+import 'package:monkey_app_demo/screens/orderHistory.dart';
 import 'package:provider/provider.dart';
-
 import './screens/spashScreen.dart';
 import './screens/landingScreen.dart';
 import './screens/loginScreen.dart';
@@ -125,6 +125,7 @@ class MyApp extends StatelessWidget {
           ChangeAddressScreen.routeName: (context) => ChangeAddressScreen(),
           RecentScreen.routeName: (context) => RecentScreen(),
           MyFavoriteScreen.routeName: (context) => MyFavoriteScreen(),
+          OrderHistoryScreen.routeName: (context) => OrderHistoryScreen(),
         },
       ),
     );

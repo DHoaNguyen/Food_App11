@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:monkey_app_demo/const/colors.dart';
+import 'package:monkey_app_demo/screens/individualItem.dart';
 import 'package:monkey_app_demo/screens/myOrderScreen.dart';
 import 'package:monkey_app_demo/utils/helper.dart';
 import 'package:monkey_app_demo/widgets/customNavBar.dart';
@@ -57,6 +58,31 @@ class OfferScreen extends StatelessWidget {
                                   shrinkWrap: true,
                                   physics: BouncingScrollPhysics(),
                                   itemBuilder: (context, index) => OfferCard(
+                                      ontap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) => IndividualItem(
+                                            productId: snapshot.data.docs[index]
+                                                ["productId"],
+                                            description:
+                                                snapshot.data.docs[index]
+                                                    ["productDescription"],
+                                            image: Image.network(
+                                              (snapshot.data.docs[index]
+                                                  ["productImg"]),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            rate: snapshot.data.docs[index]
+                                                ["productRate"],
+                                            name: snapshot.data.docs[index]
+                                                ["productName"],
+                                            price: snapshot.data.docs[index]
+                                                ["productPrice"],
+                                            oldPrice: snapshot.data.docs[index]
+                                                ["productOldPrice"],
+                                          ),
+                                        ));
+                                      },
                                       rate: snapshot.data.docs[index]
                                           ["productRate"],
                                       image: Image.network(
@@ -97,77 +123,84 @@ class OfferCard extends StatelessWidget {
     String name,
     Image image,
     double rate,
+    Function ontap,
   })  : _image = image,
         _name = name,
         _rate = rate,
+        _ontap = ontap,
         super(key: key);
 
   final String _name;
   final Image _image;
   final double _rate;
+  final Function _ontap;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: Container(
-        height: 300,
-        width: double.infinity,
-        child: Column(
-          children: [
-            SizedBox(height: 200, width: 500, child: _image),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  Text(
-                    _name,
-                    style: Helper.getTheme(context)
-                        .headline4
-                        .copyWith(color: AppColor.primary),
-                  )
-                ],
+    return GestureDetector(
+      onTap: _ontap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          height: 300,
+          width: double.infinity,
+          child: Column(
+            children: [
+              SizedBox(height: 200, width: 500, child: _image),
+              SizedBox(
+                height: 10,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  Image.asset(
-                    Helper.getAssetName("star_filled.png", "virtual"),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    "$_rate",
-                    style: TextStyle(
-                      color: AppColor.orange,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Text(
+                      _name,
+                      style: Helper.getTheme(context)
+                          .headline4
+                          .copyWith(color: AppColor.primary),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      Helper.getAssetName("star_filled.png", "virtual"),
                     ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text("124 đánh giá"),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    child: Text(
-                      ".",
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "$_rate",
                       style: TextStyle(
-                          color: AppColor.orange, fontWeight: FontWeight.bold),
+                        color: AppColor.orange,
+                      ),
                     ),
-                  ),
-                  Text(" Món ngon ưu đãi"),
-                ],
-              ),
-            )
-          ],
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("124 đánh giá"),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Text(
+                        ".",
+                        style: TextStyle(
+                            color: AppColor.orange,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(" Món ngon ưu đãi"),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

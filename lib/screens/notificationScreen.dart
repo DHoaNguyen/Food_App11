@@ -10,79 +10,75 @@ class NotificationScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          SafeArea(
-              child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(
-                        Icons.arrow_back_ios_rounded,
+          SingleChildScrollView(
+            child: SafeArea(
+                child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(
+                          Icons.arrow_back_ios_rounded,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        "Notifications",
-                        style: Helper.getTheme(context).headline5,
+                      Expanded(
+                        child: Text(
+                          "Thông báo",
+                          style: Helper.getTheme(context).headline5,
+                        ),
                       ),
-                    ),
-                    Image.asset(
-                      Helper.getAssetName("cart.png", "virtual"),
-                    ),
-                  ],
+                      Image.asset(
+                        Helper.getAssetName("cart.png", "virtual"),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              NotiCard(
-                title: "Your order has been picked up",
-                time: "Now",
-              ),
-              NotiCard(
-                title: "Your order has been delivered",
-                time: "1 h ago",
-                color: AppColor.placeholderBg,
-              ),
-              NotiCard(
-                title: "Lorem ipsum dolor sit amet, consectetur",
-                time: "3 h ago",
-              ),
-              NotiCard(
-                title: "Lorem ipsum dolor sit amet, consectetur",
-                time: "5 h ago",
-              ),
-              NotiCard(
-                title: "Lorem ipsum dolor sit amet, consectetur",
-                time: "05 Sep 2020",
-                color: AppColor.placeholderBg,
-              ),
-              NotiCard(
-                title: "Lorem ipsum dolor sit amet, consectetur",
-                time: "12 Aug 2020",
-                color: AppColor.placeholderBg,
-              ),
-              NotiCard(
-                title: "Lorem ipsum dolor sit amet, consectetur",
-                time: "20 Jul 2020",
-              ),
-              NotiCard(
-                title: "Lorem ipsum dolor sit amet, consectetur",
-                time: "12 Jul 2020",
-              ),
-            ],
-          )),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              child: CustomNavBar(
-                favorite: true,
-              ))
+                SizedBox(
+                  height: 20,
+                ),
+                NotiCard(
+                  title: "Your order has been picked up",
+                  time: "Now",
+                ),
+                NotiCard(
+                  title: "Your order has been delivered",
+                  time: "1 h ago",
+                  color: AppColor.placeholderBg,
+                ),
+                NotiCard(
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "3 h ago",
+                ),
+                NotiCard(
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "5 h ago",
+                ),
+                NotiCard(
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "05 Sep 2020",
+                  color: AppColor.placeholderBg,
+                ),
+                NotiCard(
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "12 Aug 2020",
+                  color: AppColor.placeholderBg,
+                ),
+                NotiCard(
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "20 Jul 2020",
+                ),
+                NotiCard(
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "12 Jul 2020",
+                ),
+              ],
+            )),
+          ),
         ],
       ),
     );
@@ -107,7 +103,7 @@ class NotiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
+      height: 65,
       width: double.infinity,
       decoration: BoxDecoration(
         color: _color,

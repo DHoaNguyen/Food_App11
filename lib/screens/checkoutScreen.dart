@@ -1,27 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:monkey_app_demo/const/colors.dart';
-import 'package:monkey_app_demo/screens/changeAddressScreen.dart';
+import 'package:monkey_app_demo/model/order_model.dart';
+import 'package:monkey_app_demo/provider/cart_provider.dart';
 import 'package:monkey_app_demo/screens/homeScreen.dart';
 import 'package:monkey_app_demo/utils/helper.dart';
-import 'package:monkey_app_demo/widgets/customTextInput.dart';
+import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatelessWidget {
   static const routeName = "/checkoutScreen";
   const CheckoutScreen({
     Key key,
-    @required this.subTotal,
-    @required this.shipFee,
     @required this.discount,
-    @required this.totalPrice,
+    @required this.shipFee,
+    @required this.subTotal,
+    @required this.toTalPrice,
   }) : super(key: key);
 
   final int subTotal;
+  final int toTalPrice;
   final int shipFee;
   final int discount;
-  final int totalPrice;
+
+  void deleteUserCart() async {
+    var collection = FirebaseFirestore.instance
+        .collection('cart')
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .collection("userCart");
+    var snapshots = await collection.get();
+    for (var doc in snapshots.docs) {
+      await doc.reference.delete();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    cartProvider.getCartData();
+    //   cartProvider.getCartList.clear();
+    // print(cartProvider.getCartList[1].productName);
     return Scaffold(
       body: Stack(
         children: [
@@ -207,7 +225,7 @@ class CheckoutScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "${totalPrice}K",
+                            "${toTalPrice}K",
                             style: Helper.getTheme(context).headline3.copyWith(
                                   color: AppColor.orange,
                                   fontSize: 22,
@@ -235,7 +253,18 @@ class CheckoutScreen extends StatelessWidget {
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        Order order = Order(
+                          userId: FirebaseAuth.instance.currentUser.uid,
+                          dayCreate: DateTime.now(),
+                          orderId:
+                              DateTime.now().millisecondsSinceEpoch.toString(),
+                          statusOrder: "Đã đặt hàng",
+                          totalPrice: toTalPrice.toDouble(),
+                        );
+                        await FirebaseFirestore.instance
+                            .collection("order")
+                            .add(order.toJson());
                         showModalBottomSheet(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -322,6 +351,7 @@ class CheckoutScreen extends StatelessWidget {
                                 ),
                               );
                             });
+                        deleteUserCart();
                       },
                       child: Text("Đặt hàng"),
                     ),

@@ -12,8 +12,6 @@ class FavoriteProvider with ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection("userFavorite")
         .doc(productId)
-        //   .set({});
-
         .set({
       "productId": productId,
       "productFavorite": productFavorite,

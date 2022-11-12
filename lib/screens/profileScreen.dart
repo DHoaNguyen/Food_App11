@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,17 +17,74 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  UserModel loggedInUser = UserModel();
   bool isEdit = false;
   User user = FirebaseAuth.instance.currentUser;
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController nameController = new TextEditingController();
   final TextEditingController addressController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController phoneNumberController =
+      new TextEditingController();
 
   Future<void> logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacementNamed(LandingScreen.routeName);
   }
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("user")
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
+
+  void updateProfile() {
+    FirebaseFirestore.instance
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .update({
+      "email": emailController.text,
+      "name": nameController.text,
+      "phone_number": phoneNumberController.text,
+      "address": addressController.text,
+    });
+  }
+
+  Widget showUser(String hintText) {
+    TextFormField(
+      controller: nameController,
+      decoration: InputDecoration(
+        hintText: hintText,
+        border: InputBorder.none,
+        contentPadding: const EdgeInsets.only(
+          top: 10,
+          bottom: 10,
+        ),
+      ),
+      style: TextStyle(
+        fontSize: 14,
+      ),
+    );
+  }
+
+  // @override
+  // Void intState() {
+  //   super.initState();
+  //   FirebaseFirestore.instance
+  //       .collection("user")
+  //       .doc(FirebaseAuth.instance.currentUser.uid)
+  //       .get()
+  //       .then((value) {
+  //     UserProfile = UserModel.fromMap(value.data());
+  //     setState(() {});
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +114,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 icon: Icon(Icons.mode_edit_outline))
                           ],
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
                         ClipOval(
                           child: Stack(
                             children: [
@@ -87,48 +142,226 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Text(
-                          "Xin chào Hòa",
+                          "Xin chào ${loggedInUser.name} ",
                           style: Helper.getTheme(context).headline4.copyWith(
                                 color: AppColor.primary,
                               ),
                         ),
-                        TextButton(onPressed: () {}, child: Text("Đăng xuất")),
-                        CustomFormImput(
-                          label: "Name",
-                          value: "Hòa",
-                        ),
+                        isEdit
+                            ? Text("")
+                            : TextButton(
+                                onPressed: () {
+                                  logout(context);
+                                },
+                                child: Text("Đăng xuất")),
+                        isEdit
+                            ? Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: nameController,
+                                  decoration: InputDecoration(
+                                    labelText: "Tên",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: nameController,
+                                  decoration: InputDecoration(
+                                    hintText: "${loggedInUser.name}",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                         SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
-                        CustomFormImput(
-                          label: "Email",
-                          value: "111@email.com",
-                        ),
+                        isEdit
+                            ? Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: emailController,
+                                  decoration: InputDecoration(
+                                    labelText: "Email",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: nameController,
+                                  decoration: InputDecoration(
+                                    hintText: "${loggedInUser.email}",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                         SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
-                        CustomFormImput(
-                          label: "Số điện thoại",
-                          value: "01696115627",
-                        ),
+                        isEdit
+                            ? Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: phoneNumberController,
+                                  decoration: InputDecoration(
+                                    labelText: "Số điện thoại",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: nameController,
+                                  decoration: InputDecoration(
+                                    hintText: "${loggedInUser.phone_number}",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                         SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
-                        CustomFormImput(
-                          label: "Địa chỉ",
-                          value: "180/28/ Nguyễn Hữu Cảnh",
-                        ),
+                        isEdit
+                            ? Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: addressController,
+                                  decoration: InputDecoration(
+                                    labelText: "Địa chỉ",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                height: 50,
+                                padding: const EdgeInsets.only(left: 40),
+                                decoration: ShapeDecoration(
+                                  shape: StadiumBorder(),
+                                  color: AppColor.placeholderBg,
+                                ),
+                                child: TextFormField(
+                                  controller: nameController,
+                                  decoration: InputDecoration(
+                                    hintText: "${loggedInUser.address}",
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.only(
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                         SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
                         SizedBox(
                           height: 50,
@@ -138,6 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   onPressed: () {
                                     setState(() {
                                       isEdit = false;
+                                      updateProfile();
                                     });
                                   },
                                   child: Text("Lưu"),
@@ -169,6 +403,7 @@ class CustomFormImput extends StatelessWidget {
     Key key,
     String label,
     String value,
+    String handler,
     bool isPassword = false,
   })  : _label = label,
         _value = value,

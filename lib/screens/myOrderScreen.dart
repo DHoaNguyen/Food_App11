@@ -96,7 +96,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                       return Dismissible(
                                         key: Key(itemId),
                                         onDismissed:
-                                            (DismissDirection direction) {
+                                            (DismissDirection direction) async {
                                           setState(() async {
                                             await FirebaseFirestore.instance
                                                 .collection("cart")
@@ -106,6 +106,13 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                                 .doc(data.productId)
                                                 .delete();
                                           });
+                                          // await FirebaseFirestore.instance
+                                          //     .collection("cart")
+                                          //     .doc(FirebaseAuth
+                                          //         .instance.currentUser.uid)
+                                          //     .collection("userCart")
+                                          //     .doc(data.productId)
+                                          //     .delete();
                                         },
                                         background:
                                             Container(color: AppColor.orange),
@@ -141,113 +148,144 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                           ),
                           child: Row(
                             children: [
-                              Expanded(
-                                child: Text(
-                                  "Mã giảm giá",
-                                  style: Helper.getTheme(context).headline3,
-                                ),
-                              ),
+                              cartProvider.cartList.isEmpty
+                                  ? Text("")
+                                  : Expanded(
+                                      child: Text(
+                                        "Mã giảm giá",
+                                        style:
+                                            Helper.getTheme(context).headline3,
+                                      ),
+                                    ),
                               TextButton(
                                   onPressed: () {},
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.add,
-                                        color: AppColor.orange,
-                                      ),
-                                      Text(
-                                        "Thêm mã",
-                                        style: TextStyle(
-                                          color: AppColor.orange,
-                                        ),
-                                      )
-                                    ],
-                                  ))
+                                  child: cartProvider.cartList.isEmpty
+                                      ? Text("")
+                                      : Row(
+                                          children: [
+                                            Icon(
+                                              Icons.add,
+                                              color: AppColor.orange,
+                                            ),
+                                            Text(
+                                              "Thêm mã",
+                                              style: TextStyle(
+                                                color: AppColor.orange,
+                                              ),
+                                            )
+                                          ],
+                                        ))
                             ],
                           ),
                         ),
                         SizedBox(
                           height: 15,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Tạm tính",
-                                style: Helper.getTheme(context).headline3,
+                        cartProvider.cartList.isEmpty
+                            ? Text("")
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Tạm tính",
+                                      style: Helper.getTheme(context).headline3,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${subTotal}K",
+                                    style: Helper.getTheme(context)
+                                        .headline3
+                                        .copyWith(
+                                          color: AppColor.orange,
+                                        ),
+                                  )
+                                ],
                               ),
-                            ),
-                            Text(
-                              "${subTotal}K",
-                              style:
-                                  Helper.getTheme(context).headline3.copyWith(
-                                        color: AppColor.orange,
-                                      ),
-                            )
-                          ],
-                        ),
                         SizedBox(
                           height: 10,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Phí giao hàng",
-                                style: Helper.getTheme(context).headline3,
+                        cartProvider.cartList.isEmpty
+                            ? Text("")
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Phí giao hàng",
+                                      style: Helper.getTheme(context).headline3,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${shipFee}K",
+                                    style: Helper.getTheme(context)
+                                        .headline3
+                                        .copyWith(
+                                          color: AppColor.orange,
+                                        ),
+                                  )
+                                ],
                               ),
-                            ),
-                            Text(
-                              "${shipFee}K",
-                              style:
-                                  Helper.getTheme(context).headline3.copyWith(
-                                        color: AppColor.orange,
-                                      ),
-                            )
-                          ],
-                        ),
                         SizedBox(
                           height: 10,
                         ),
-                        Divider(
-                          color: AppColor.placeholder.withOpacity(0.25),
-                          thickness: 1.5,
-                        ),
+                        cartProvider.cartList.isEmpty
+                            ? Text("")
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Mã giảm giá",
+                                      style: Helper.getTheme(context).headline3,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${discount}K",
+                                    style: Helper.getTheme(context)
+                                        .headline3
+                                        .copyWith(
+                                          color: AppColor.orange,
+                                        ),
+                                  )
+                                ],
+                              ),
                         SizedBox(
                           height: 10,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Tổng cộng",
-                                style: Helper.getTheme(context).headline3,
+                        cartProvider.cartList.isEmpty
+                            ? Text("")
+                            : Divider(
+                                color: AppColor.placeholder.withOpacity(0.25),
+                                thickness: 1.5,
                               ),
-                            ),
-                            Text(
-                              "${totalPrice}K",
-                              style:
-                                  Helper.getTheme(context).headline3.copyWith(
-                                        color: AppColor.orange,
-                                        fontSize: 22,
-                                      ),
-                            )
-                          ],
+                        SizedBox(
+                          height: 10,
                         ),
+                        cartProvider.cartList.isEmpty
+                            ? Text("")
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Tổng cộng",
+                                      style: Helper.getTheme(context).headline3,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${totalPrice}K",
+                                    style: Helper.getTheme(context)
+                                        .headline3
+                                        .copyWith(
+                                          color: AppColor.orange,
+                                          fontSize: 22,
+                                        ),
+                                  )
+                                ],
+                              ),
                         SizedBox(height: 20),
                         SizedBox(
                           height: 50,
                           width: double.infinity,
                           child: cartProvider.cartList.isEmpty
-                              ? ElevatedButton(
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Bạn không thể đặt hàng khi giỏ hàng trống")));
-                                  },
-                                  child: Text("Đặt hàng"),
-                                )
+                              ? Text("")
                               : ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context)
@@ -256,7 +294,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                         discount: discount,
                                         shipFee: shipFee,
                                         subTotal: subTotal,
-                                        totalPrice: totalPrice,
+                                        toTalPrice: totalPrice,
                                       ),
                                     ));
                                   },
@@ -298,38 +336,33 @@ class BurgerCard extends StatelessWidget {
   final String _productId;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: _isLast
-              ? BorderSide.none
-              : BorderSide(
-                  color: AppColor.placeholder.withOpacity(0.25),
+    return Stack(
+      children: [
+        Container(
+          height: 60,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "$_name x $_quantity ",
+                  style: TextStyle(
+                    color: AppColor.primary,
+                    fontSize: 16,
+                  ),
                 ),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              "$_name x $_quantity ",
-              style: TextStyle(
-                color: AppColor.primary,
-                fontSize: 16,
               ),
-            ),
+              Text(
+                "${_price * _quantity}K",
+                style: TextStyle(
+                  color: AppColor.primary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+              )
+            ],
           ),
-          Text(
-            "${_price * _quantity}K",
-            style: TextStyle(
-              color: AppColor.primary,
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
-          )
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
