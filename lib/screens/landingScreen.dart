@@ -59,7 +59,7 @@ class LandingScreen extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      "Discover the best foods from over 1,000 restaurants and fast delivery to your doorstep",
+                      "Xây dựng Food App sử dụng Flutter",
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -74,7 +74,7 @@ class LandingScreen extends StatelessWidget {
                         Navigator.of(context)
                             .pushReplacementNamed(LoginScreen.routeName);
                       },
-                      child: Text("Login"),
+                      child: Text("Đăng nhập"),
                     ),
                   ),
                   SizedBox(
@@ -100,7 +100,7 @@ class LandingScreen extends StatelessWidget {
                         Navigator.of(context)
                             .pushReplacementNamed(SignUpScreen.routeName);
                       },
-                      child: Text("Create an Account"),
+                      child: Text("Tạo tài khoản"),
                     ),
                   ),
                   Spacer(),

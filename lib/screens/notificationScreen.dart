@@ -42,30 +42,30 @@ class NotificationScreen extends StatelessWidget {
                   height: 20,
                 ),
                 NotiCard(
-                  title: "Your order has been picked up",
-                  time: "Now",
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "Bây giờ",
                 ),
                 NotiCard(
-                  title: "Your order has been delivered",
-                  time: "1 h ago",
+                  title: "Lorem ipsum dolor sit amet, consectetur",
+                  time: "1 tiếng trước",
                   color: AppColor.placeholderBg,
                 ),
                 NotiCard(
                   title: "Lorem ipsum dolor sit amet, consectetur",
-                  time: "3 h ago",
+                  time: "1 tiếng trước",
                 ),
                 NotiCard(
                   title: "Lorem ipsum dolor sit amet, consectetur",
-                  time: "5 h ago",
+                  time: "1 tiếng trước",
                 ),
                 NotiCard(
                   title: "Lorem ipsum dolor sit amet, consectetur",
-                  time: "05 Sep 2020",
+                  time: "1 tiếng trước",
                   color: AppColor.placeholderBg,
                 ),
                 NotiCard(
                   title: "Lorem ipsum dolor sit amet, consectetur",
-                  time: "12 Aug 2020",
+                  time: "1 tiếng trước",
                   color: AppColor.placeholderBg,
                 ),
                 NotiCard(

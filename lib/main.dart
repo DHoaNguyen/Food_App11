@@ -1,5 +1,4 @@
 // ignore_for_file: missing_required_param
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:monkey_app_demo/provider/cart_provider.dart';
@@ -7,13 +6,13 @@ import 'package:monkey_app_demo/provider/favorite_provider.dart';
 import 'package:monkey_app_demo/screens/changeAddressScreen.dart';
 import 'package:monkey_app_demo/screens/myFavoriteScreen.dart';
 import 'package:monkey_app_demo/screens/orderHistory.dart';
+import 'package:monkey_app_demo/screens/voucherScreen.dart';
 import 'package:provider/provider.dart';
 import './screens/spashScreen.dart';
 import './screens/landingScreen.dart';
 import './screens/loginScreen.dart';
 import 'screens/signUpScreen.dart';
 import './screens/forgetPwScreen.dart';
-import './screens/sentOTPScreen.dart';
 import './screens/newPwScreen.dart';
 import './screens/introScreen.dart';
 import './screens/homeScreen.dart';
@@ -106,7 +105,6 @@ class MyApp extends StatelessWidget {
           LoginScreen.routeName: (context) => LoginScreen(),
           SignUpScreen.routeName: (context) => SignUpScreen(),
           ForgetPwScreen.routeName: (context) => ForgetPwScreen(),
-          SendOTPScreen.routeName: (context) => SendOTPScreen(),
           NewPwScreen.routeName: (context) => NewPwScreen(),
           IntroScreen.routeName: (context) => IntroScreen(),
           HomeScreen.routeName: (context) => HomeScreen(),
@@ -126,6 +124,7 @@ class MyApp extends StatelessWidget {
           RecentScreen.routeName: (context) => RecentScreen(),
           MyFavoriteScreen.routeName: (context) => MyFavoriteScreen(),
           OrderHistoryScreen.routeName: (context) => OrderHistoryScreen(),
+          VoucherScreen.routeName: (context) => VoucherScreen(),
         },
       ),
     );

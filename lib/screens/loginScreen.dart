@@ -43,8 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
           'uid': userData['uid'],
           'imageUrl': userData['picture']['data']['url'],
           'name': userData['name'],
-          'address': userData['address'],
-          'phone_number': userData['phone_number'],
+          'address': "",
+          'phone_number': "",
         });
 
         Navigator.of(context).popAndPushNamed(IntroScreen.routeName);
@@ -79,7 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      await FirebaseFirestore.instance.collection('user').add({
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .set({
+        'phone_number': "",
+        'address': "",
+        'uid': FirebaseAuth.instance.currentUser.uid,
         'email': googleSignInAccount.email,
         'imageUrl': googleSignInAccount.photoUrl,
         'name': googleSignInAccount.displayName,
@@ -102,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .then((uid) => {
                 Fluttertoast.showToast(msg: "Đăng nhập thành công"),
                 Navigator.of(context)
-                    .pushReplacementNamed(HomeScreen.routeName),
+                    .pushReplacementNamed(IntroScreen.routeName),
               })
           .catchError((e) {
         Fluttertoast.showToast(msg: "Đăng nhập thất bại");

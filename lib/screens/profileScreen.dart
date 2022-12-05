@@ -1,6 +1,3 @@
-import 'dart:ffi';
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +22,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController addressController = new TextEditingController();
   final TextEditingController phoneNumberController =
       new TextEditingController();
+  final _formkey = GlobalKey<FormState>();
 
   Future<void> logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacementNamed(LandingScreen.routeName);
   }
 
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -49,351 +48,346 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .collection("user")
         .doc(FirebaseAuth.instance.currentUser.uid)
         .update({
-      "email": emailController.text,
       "name": nameController.text,
       "phone_number": phoneNumberController.text,
       "address": addressController.text,
     });
   }
 
-  Widget showUser(String hintText) {
-    TextFormField(
-      controller: nameController,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.only(
-          top: 10,
-          bottom: 10,
-        ),
-      ),
-      style: TextStyle(
-        fontSize: 14,
-      ),
-    );
-  }
-
-  // @override
-  // Void intState() {
-  //   super.initState();
-  //   FirebaseFirestore.instance
-  //       .collection("user")
-  //       .doc(FirebaseAuth.instance.currentUser.uid)
-  //       .get()
-  //       .then((value) {
-  //     UserProfile = UserModel.fromMap(value.data());
-  //     setState(() {});
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 1), () {
+      if (this.mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: SafeArea(
-              child: Container(
-                height: Helper.getScreenHeight(context),
-                width: Helper.getScreenWidth(context),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isEdit = true;
-                                  });
-                                },
-                                icon: Icon(Icons.mode_edit_outline))
-                          ],
-                        ),
-                        ClipOval(
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 80,
-                                width: 80,
-                                child: Image.asset(
-                                  Helper.getAssetName(
-                                    "user.jpg",
-                                    "real",
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Form(
+                    key: _formkey,
+                    child: SafeArea(
+                      child: Container(
+                        height: Helper.getScreenHeight(context),
+                        width: Helper.getScreenWidth(context),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isEdit = true;
+                                          });
+                                        },
+                                        icon: Icon(Icons.mode_edit_outline))
+                                  ],
+                                ),
+                                ClipOval(
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        height: 80,
+                                        width: 80,
+                                        child: Image.asset(
+                                          Helper.getAssetName(
+                                            "user.jpg",
+                                            "real",
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 0,
+                                        child: Container(
+                                          height: 20,
+                                          width: 80,
+                                          color: Colors.black.withOpacity(0.3),
+                                          child: Image.asset(
+                                              Helper.getAssetName(
+                                                  "camera.png", "virtual")),
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                  fit: BoxFit.cover,
                                 ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                child: Container(
-                                  height: 20,
-                                  width: 80,
-                                  color: Colors.black.withOpacity(0.3),
-                                  child: Image.asset(Helper.getAssetName(
-                                      "camera.png", "virtual")),
+                                SizedBox(
+                                  height: 5,
                                 ),
-                              )
-                            ],
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "Xin chào ${loggedInUser.name} ",
+                                  style: Helper.getTheme(context)
+                                      .headline4
+                                      .copyWith(
+                                        color: AppColor.primary,
+                                      ),
+                                ),
+                                isEdit
+                                    ? Text("")
+                                    : TextButton(
+                                        onPressed: () {
+                                          logout(context);
+                                        },
+                                        child: Text("Đăng xuất")),
+                                isEdit
+                                    ? Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: TextFormField(
+                                          controller: nameController,
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return "Vui lòng nhập tên";
+                                            }
+                                            return null;
+                                          },
+                                          onSaved: (value) {
+                                            nameController.text = value;
+                                          },
+                                          decoration: InputDecoration(
+                                            labelText: "Tên",
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                              top: 10,
+                                              bottom: 10,
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 15),
+                                          child: Text(
+                                            "${loggedInUser.name}",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                isEdit
+                                    ? SizedBox(
+                                        height: 1,
+                                      )
+                                    : Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 15),
+                                          child: Text(
+                                            "${loggedInUser.email}",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                isEdit
+                                    ? Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          controller: phoneNumberController,
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return ('Vui Lòng nhập số điện thoại');
+                                            }
+                                            if (!RegExp("^[0-9]")
+                                                .hasMatch(value)) {
+                                              return ('Vui lòng nhập đúng số điện thoại');
+                                            }
+                                            return null;
+                                          },
+                                          onSaved: (value) {
+                                            phoneNumberController.text = value;
+                                          },
+                                          decoration: InputDecoration(
+                                            labelText: "Số điện thoại",
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                              top: 10,
+                                              bottom: 10,
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 15),
+                                          child: Text(
+                                            "${loggedInUser.phone_number}",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                isEdit
+                                    ? Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: TextFormField(
+                                          controller: addressController,
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return "Vui lòng nhập địa chỉ";
+                                            }
+                                            return null;
+                                          },
+                                          onSaved: (value) {
+                                            addressController.text = value;
+                                          },
+                                          decoration: InputDecoration(
+                                            labelText: "Địa chỉ",
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                              top: 10,
+                                              bottom: 10,
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        width: double.infinity,
+                                        height: 50,
+                                        padding:
+                                            const EdgeInsets.only(left: 40),
+                                        decoration: ShapeDecoration(
+                                          shape: StadiumBorder(),
+                                          color: AppColor.placeholderBg,
+                                        ),
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 15),
+                                          child: Text(
+                                            "${loggedInUser.address}",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                SizedBox(
+                                  height: 50,
+                                  width: double.infinity,
+                                  child: isEdit
+                                      ? ElevatedButton(
+                                          onPressed: () {
+                                            if (_formkey.currentState
+                                                .validate()) {
+                                              setState(() {
+                                                isEdit = false;
+                                                print(_formkey.currentState);
+                                                updateProfile();
+                                              });
+                                            }
+                                          },
+                                          child: Text("Lưu"),
+                                        )
+                                      : Text(""),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Xin chào ${loggedInUser.name} ",
-                          style: Helper.getTheme(context).headline4.copyWith(
-                                color: AppColor.primary,
-                              ),
-                        ),
-                        isEdit
-                            ? Text("")
-                            : TextButton(
-                                onPressed: () {
-                                  logout(context);
-                                },
-                                child: Text("Đăng xuất")),
-                        isEdit
-                            ? Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: nameController,
-                                  decoration: InputDecoration(
-                                    labelText: "Tên",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: nameController,
-                                  decoration: InputDecoration(
-                                    hintText: "${loggedInUser.name}",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        isEdit
-                            ? Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: emailController,
-                                  decoration: InputDecoration(
-                                    labelText: "Email",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: nameController,
-                                  decoration: InputDecoration(
-                                    hintText: "${loggedInUser.email}",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        isEdit
-                            ? Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: phoneNumberController,
-                                  decoration: InputDecoration(
-                                    labelText: "Số điện thoại",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: nameController,
-                                  decoration: InputDecoration(
-                                    hintText: "${loggedInUser.phone_number}",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        isEdit
-                            ? Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: addressController,
-                                  decoration: InputDecoration(
-                                    labelText: "Địa chỉ",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: double.infinity,
-                                height: 50,
-                                padding: const EdgeInsets.only(left: 40),
-                                decoration: ShapeDecoration(
-                                  shape: StadiumBorder(),
-                                  color: AppColor.placeholderBg,
-                                ),
-                                child: TextFormField(
-                                  controller: nameController,
-                                  decoration: InputDecoration(
-                                    hintText: "${loggedInUser.address}",
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(
-                                      top: 10,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        SizedBox(
-                          height: 50,
-                          width: double.infinity,
-                          child: isEdit
-                              ? ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isEdit = false;
-                                      updateProfile();
-                                    });
-                                  },
-                                  child: Text("Lưu"),
-                                )
-                              : Text(""),
-                        )
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: CustomNavBar(
+                    profile: true,
+                  ),
+                ),
+              ],
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: CustomNavBar(
-              profile: true,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

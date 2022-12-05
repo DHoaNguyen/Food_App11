@@ -109,71 +109,74 @@ class _MyFavoriteScreenState extends State<MyFavoriteScreen> {
     // );
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
+                SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Row(
                           children: [
-                            Text(
-                              "Danh sách ưu thích",
-                              style: Helper.getTheme(context).headline5,
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Danh sách ưu thích",
+                                    style: Helper.getTheme(context).headline5,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pushNamed(MyOrderScreen.routeName);
+                              },
+                              child: Image.asset(
+                                Helper.getAssetName(
+                                    "cart_white.png", "virtual"),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(MyOrderScreen.routeName);
-                        },
-                        child: Image.asset(
-                          Helper.getAssetName("cart_white.png", "virtual"),
-                        ),
+                      SizedBox(
+                        height: 20,
                       ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Column(
+                        children: [
+                          listProduct.isEmpty
+                              ? Center(
+                                  child: Text(
+                                  "Chưa thêm sản phẩm ưu thích",
+                                  style: Helper.getTheme(context)
+                                      .headline4
+                                      .copyWith(color: AppColor.primary),
+                                ))
+                              : buildRecentItem(),
+                        ],
+                      )
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Column(
-                  children: [
-                    listProduct.isEmpty
-                        ? Center(
-                            child: Text(
-                            "Chưa thêm sản phẩm ưu thích",
-                            style: Helper.getTheme(context)
-                                .headline4
-                                .copyWith(color: AppColor.primary),
-                          ))
-                        : buildRecentItem(),
-                  ],
-                )
+                Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomNavBar(
+                      favorite: true,
+                    )),
               ],
             ),
-          ),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              child: CustomNavBar(
-                favorite: true,
-              )),
-        ],
-      ),
     );
   }
 }

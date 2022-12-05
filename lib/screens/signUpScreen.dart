@@ -60,7 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         .set(userModel.toMap());
     Fluttertoast.showToast(msg: "Tạo tài khoản thành công");
 
-    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
   }
 
   @override

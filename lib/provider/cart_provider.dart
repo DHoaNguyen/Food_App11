@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:monkey_app_demo/model/cart_model.dart';
+import 'package:monkey_app_demo/model/product_model.dart';
 
 class CartProvider with ChangeNotifier {
   List<CartModel> cartList = [];
+  List<Product> productByCategoryList = [];
   Future getCartData() async {
     List<CartModel> newCartList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -30,5 +32,23 @@ class CartProvider with ChangeNotifier {
       subTotal += element.productPrice * element.productQuantity;
     });
     return subTotal;
+  }
+
+  Future getProductByCategory(String categoryId) async {
+    List<Product> newProductByCategoryList = [];
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection("product").get();
+    querySnapshot.docs.forEach((element) {
+      if (categoryId == element.get("categoryId")) {
+        Product.fromJson(element.data());
+        newProductByCategoryList.add(Product.fromJson(element.data()));
+      }
+    });
+    productByCategoryList = newProductByCategoryList;
+    notifyListeners();
+  }
+
+  List<Product> get getProductByCategoryList {
+    return productByCategoryList;
   }
 }

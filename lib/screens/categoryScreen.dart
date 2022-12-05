@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:monkey_app_demo/const/colors.dart';
+import 'package:monkey_app_demo/provider/cart_provider.dart';
 import 'package:monkey_app_demo/screens/individualItem.dart';
 import 'package:monkey_app_demo/utils/helper.dart';
 import 'package:monkey_app_demo/widgets/searchBar.dart';
+import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const routeName = "/categoryScreen";
@@ -23,6 +25,8 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    cartProvider.getProductByCategory(widget.id);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -58,56 +62,41 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   padding: const EdgeInsets.only(
                     left: 20,
                   ),
-                  child: FutureBuilder(
-                    future: FirebaseFirestore.instance
-                        .collection("category")
-                        .doc(widget.id)
-                        .collection(widget.collection)
-                        .get(),
-                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      return Column(
-                        children: [
-                          GridView.builder(
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              dynamic data = snapshot.data.docs[index];
-                              return MostPopularCard(
-                                rate: snapshot.data.docs[index]["productRate"],
-                                ontap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => IndividualItem(
-                                      productId: snapshot.data.docs[index]
-                                          ["productId"],
-                                      description: data["productDescription"],
-                                      image: Image.network(data["productImg"]),
-                                      rate: snapshot.data.docs[index]
-                                          ["productRate"],
-                                      name: snapshot.data.docs[index]
-                                          ["productName"],
-                                      price: snapshot.data.docs[index]
-                                          ["productPrice"],
-                                      oldPrice: snapshot.data.docs[index]
-                                          ["productOldPrice"],
-                                    ),
-                                  ));
-                                },
-                                image: Image.network(data["productImg"]),
-                                name: data["productName"],
-                              );
+                  child: Column(
+                    children: [
+                      GridView.builder(
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var data =
+                              cartProvider.getProductByCategoryList[index];
+                          return MostPopularCard(
+                            rate: data.productRate,
+                            ontap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => IndividualItem(
+                                  productId: data.productId,
+                                  description: data.productDescription,
+                                  image: Image.network(data.productImg),
+                                  rate: data.productRate,
+                                  name: data.productName,
+                                  price: data.productPrice,
+                                  oldPrice: data.productOldPrice,
+                                ),
+                              ));
                             },
-                            itemCount: snapshot.data.docs.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 10,
-                                    crossAxisSpacing: 10),
-                          ),
-                        ],
-                      );
-                    },
+                            image: Image.network(cartProvider
+                                .getProductByCategoryList[index].productImg),
+                            name: cartProvider
+                                .getProductByCategoryList[index].productName,
+                          );
+                        },
+                        itemCount: cartProvider.productByCategoryList.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10),
+                      ),
+                    ],
                   ),
                 )
               ],
@@ -179,7 +168,7 @@ class MostPopularCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: Container(
               width: 200,
-              height: 100,
+              height: 90,
               child: _image,
             ),
           ),

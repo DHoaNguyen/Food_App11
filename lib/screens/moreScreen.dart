@@ -27,7 +27,7 @@ class MoreScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "More",
+                        "Chi tiết",
                         style: Helper.getTheme(context).headline5,
                       ),
                     ],

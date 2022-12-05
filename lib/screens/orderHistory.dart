@@ -30,7 +30,7 @@ class OrderHistoryScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          "Hộp thư",
+                          "Lịch sử đặt hàng",
                           style: Helper.getTheme(context).headline5,
                         ),
                       ),
@@ -102,8 +102,9 @@ class OrderHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var formatter = NumberFormat('##,000');
     return Container(
-      height: 95,
+      height: 115,
       width: double.infinity,
       decoration: BoxDecoration(
         color: _color,
@@ -130,7 +131,7 @@ class OrderHistory extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _title,
+                  "Mã đơn hàng $_title",
                   style: Helper.getTheme(context)
                       .headline3
                       .copyWith(color: AppColor.primary),
@@ -138,7 +139,7 @@ class OrderHistory extends StatelessWidget {
                 SizedBox(height: 5),
                 Text(_statusOrder),
                 SizedBox(height: 5),
-                Text("Tổng tiền :${_totalPrice}K"),
+                Text("Tổng tiền :${formatter.format(_totalPrice)}đ"),
               ],
             ),
           ),

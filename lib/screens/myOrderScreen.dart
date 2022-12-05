@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:monkey_app_demo/const/colors.dart';
+import 'package:monkey_app_demo/model/user_model.dart';
 import 'package:monkey_app_demo/provider/cart_provider.dart';
 import 'package:monkey_app_demo/screens/checkoutScreen.dart';
+import 'package:monkey_app_demo/screens/voucherScreen.dart';
 import 'package:monkey_app_demo/utils/helper.dart';
 import 'package:monkey_app_demo/widgets/customNavBar.dart';
 import 'package:provider/provider.dart';
@@ -12,21 +15,41 @@ class MyOrderScreen extends StatefulWidget {
   static const routeName = "/myOrderScreen";
   const MyOrderScreen({
     Key key,
-  }) : super(key: key);
+    int discount = 0,
+    bool isDiscount = false,
+  })  : _discount = discount,
+        _isDiscount = isDiscount,
+        super(key: key);
+  final int _discount;
+  final bool _isDiscount;
 
   @override
   State<MyOrderScreen> createState() => _MyOrderScreenState();
 }
 
 class _MyOrderScreenState extends State<MyOrderScreen> {
+  var formatter = NumberFormat('##,000');
+  UserModel loggedInUser = UserModel();
+  User user = FirebaseAuth.instance.currentUser;
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("user")
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     cartProvider.getCartData();
     int subTotal = cartProvider.subTotal();
-    int shipFee = 15;
-    int discount = 0;
-    int value = subTotal - discount;
+    int shipFee = 15000;
+    int value = subTotal - widget._discount;
 
     int totalPrice = value += shipFee;
 
@@ -35,7 +58,6 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
         shipFee = totalPrice = 0;
       });
     }
-
     return Scaffold(
       body: Stack(
         children: [
@@ -158,7 +180,10 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                       ),
                                     ),
                               TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pushNamed(VoucherScreen.routeName);
+                                  },
                                   child: cartProvider.cartList.isEmpty
                                       ? Text("")
                                       : Row(
@@ -192,7 +217,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    "${subTotal}K",
+                                    "${formatter.format(subTotal)}đ",
                                     style: Helper.getTheme(context)
                                         .headline3
                                         .copyWith(
@@ -215,7 +240,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    "${shipFee}K",
+                                    "${formatter.format(shipFee)}đ",
                                     style: Helper.getTheme(context)
                                         .headline3
                                         .copyWith(
@@ -237,14 +262,16 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                       style: Helper.getTheme(context).headline3,
                                     ),
                                   ),
-                                  Text(
-                                    "${discount}K",
-                                    style: Helper.getTheme(context)
-                                        .headline3
-                                        .copyWith(
-                                          color: AppColor.orange,
-                                        ),
-                                  )
+                                  widget._isDiscount
+                                      ? Text(
+                                          "-${formatter.format(widget._discount)}đ",
+                                          style: Helper.getTheme(context)
+                                              .headline3
+                                              .copyWith(
+                                                color: AppColor.orange,
+                                              ),
+                                        )
+                                      : Text(""),
                                 ],
                               ),
                         SizedBox(
@@ -270,7 +297,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    "${totalPrice}K",
+                                    "${formatter.format(totalPrice)}đ",
                                     style: Helper.getTheme(context)
                                         .headline3
                                         .copyWith(
@@ -288,15 +315,23 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               ? Text("")
                               : ElevatedButton(
                                   onPressed: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => CheckoutScreen(
-                                        discount: discount,
-                                        shipFee: shipFee,
-                                        subTotal: subTotal,
-                                        toTalPrice: totalPrice,
-                                      ),
-                                    ));
+                                    if (loggedInUser.address == "" ||
+                                        loggedInUser.phone_number == "") {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  "Thông tin của bạn chưa đầy đủ vui lòng cập nhật")));
+                                    } else {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => CheckoutScreen(
+                                          discount: widget._discount,
+                                          shipFee: shipFee,
+                                          subTotal: subTotal,
+                                          toTalPrice: totalPrice,
+                                        ),
+                                      ));
+                                    }
                                   },
                                   child: Text("Đặt hàng"),
                                 ),
@@ -336,6 +371,7 @@ class BurgerCard extends StatelessWidget {
   final String _productId;
   @override
   Widget build(BuildContext context) {
+    var formatter = NumberFormat('##,000');
     return Stack(
       children: [
         Container(
@@ -352,7 +388,7 @@ class BurgerCard extends StatelessWidget {
                 ),
               ),
               Text(
-                "${_price * _quantity}K",
+                "${formatter.format(_price * _quantity)}đ",
                 style: TextStyle(
                   color: AppColor.primary,
                   fontSize: 16,

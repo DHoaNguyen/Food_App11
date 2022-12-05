@@ -16,20 +16,19 @@ class _IntroScreenState extends State<IntroScreen> {
   final List<Map<String, String>> _pages = [
     {
       "image": "vector1.png",
-      "title": "Find Food You Love",
+      "title": "Đa dạng món ăn",
       "desc":
-          "Discover the best foods from over 1,000 restaurants and fast delivery to your doorstep"
+          "Món ăn vô cùng đa dạng và phong phú giúp bạn có thể dễ dàng lựa chọn"
     },
     {
       "image": "vector2.png",
-      "title": "Fast Delivery",
-      "desc": "Fast food delivery to your home, office wherever you are"
+      "title": "Giao hàng nhanh chóng",
+      "desc": "Đơn hàng của bạn sẽ được xử lý và giao đến tận tay của bạn"
     },
     {
       "image": "vector3.png",
-      "title": "Live Tracking",
-      "desc":
-          "Real time tracking of your food on the app once you placed the order"
+      "title": "Kiểm tra đơn hàng",
+      "desc": "Giúp bạn có thể kiểm tra những đơn hàng đã đặt"
     },
   ];
 
@@ -53,7 +52,7 @@ class _IntroScreenState extends State<IntroScreen> {
               children: [
                 Spacer(),
                 Container(
-                  height: 400,
+                  height: 370,
                   width: double.infinity,
                   child: PageView.builder(
                     controller: _controller,

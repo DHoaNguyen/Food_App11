@@ -167,64 +167,72 @@ class _RecentScreenState extends State<RecentScreen> {
                             buildRecentItem(),
                           ],
                         )
-                      : StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection("product")
-                              .snapshots(),
-                          builder: ((context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            var varData =
-                                searchFunction(query, snapshot.data.docs);
-                            return SizedBox(
-                              child: result.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                      "Không tìm thấy sản phẩm",
-                                      style: Helper.getTheme(context)
-                                          .headline4
-                                          .copyWith(color: AppColor.primary),
-                                    ))
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: BouncingScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        var data = varData[index];
-                                        return RecentItemCard(
-                                            ontap: () {
-                                              Navigator.of(context)
-                                                  .push(MaterialPageRoute(
-                                                builder: (context) {
-                                                  return IndividualItem(
-                                                    productId:
-                                                        data["productId"],
-                                                    description: data[
-                                                        "productDescription"],
-                                                    image: Image.network(
-                                                      (data["productImg"]),
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    rate: data["productRate"],
-                                                    name: data["productName"],
-                                                    price: data["productPrice"],
-                                                    oldPrice:
-                                                        data["productOldPrice"],
-                                                  );
+                      : Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection("product")
+                                  .snapshots(),
+                              builder: ((context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                var varData =
+                                    searchFunction(query, snapshot.data.docs);
+                                return SizedBox(
+                                  child: result.isEmpty
+                                      ? Center(
+                                          child: Text(
+                                          "Không tìm thấy sản phẩm",
+                                          style: Helper.getTheme(context)
+                                              .headline4
+                                              .copyWith(
+                                                  color: AppColor.primary),
+                                        ))
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          physics: BouncingScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            var data = varData[index];
+                                            return RecentItemCard(
+                                                ontap: () {
+                                                  Navigator.of(context)
+                                                      .push(MaterialPageRoute(
+                                                    builder: (context) {
+                                                      return IndividualItem(
+                                                        productId:
+                                                            data["productId"],
+                                                        description: data[
+                                                            "productDescription"],
+                                                        image: Image.network(
+                                                          (data["productImg"]),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        rate:
+                                                            data["productRate"],
+                                                        name:
+                                                            data["productName"],
+                                                        price: data[
+                                                            "productPrice"],
+                                                        oldPrice: data[
+                                                            "productOldPrice"],
+                                                      );
+                                                    },
+                                                  ));
                                                 },
-                                              ));
-                                            },
-                                            rate: data["productRate"],
-                                            image: Image.network(
-                                              (data["productImg"]),
-                                              fit: BoxFit.cover,
-                                            ),
-                                            name: data["productName"]);
-                                      },
-                                      itemCount: result.length),
-                            );
-                          }))
+                                                rate: data["productRate"],
+                                                image: Image.network(
+                                                  (data["productImg"]),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                name: data["productName"]);
+                                          },
+                                          itemCount: result.length),
+                                );
+                              })),
+                        )
                 ],
               ),
             ),

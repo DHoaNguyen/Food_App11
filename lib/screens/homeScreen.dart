@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:monkey_app_demo/model/user_model.dart';
 import 'package:monkey_app_demo/screens/categoryScreen.dart';
 import 'package:monkey_app_demo/screens/myOrderScreen.dart';
 import 'package:monkey_app_demo/screens/recentScreen.dart';
@@ -20,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  UserModel loggedInUser = UserModel();
+  User user = FirebaseAuth.instance.currentUser;
   String query = " ";
 
   Widget buidCategory() {
@@ -99,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fit: BoxFit.cover,
                       ),
                       name: snapshot.data.docs[index]["productName"]),
-                  itemCount: snapshot.data.docs.length),
+                  itemCount: 6),
             );
           })),
     );
@@ -158,123 +161,140 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  bool isLoading = true;
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("user")
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 1), () {
+      if (this.mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Stack(
+              children: [
+                SafeArea(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Xin Chào!",
-                          style: Helper.getTheme(context).headline5,
+                        SizedBox(
+                          height: 20,
                         ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    child: Text("Giao đến"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: SizedBox(
-                        width: 300,
-                        child: DropdownButton(
-                          value: "current location",
-                          items: [
-                            DropdownMenuItem(
-                              child: Text("180/28 Nguyễn Hữu Cảnh"),
-                              value: "current location",
-                            ),
-                          ],
-                          icon: Image.asset(
-                            Helper.getAssetName(
-                                "dropdown_filled.png", "virtual"),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
                           ),
-                          style: Helper.getTheme(context).headline4,
-                          onChanged: (_) {},
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Xin Chào!",
+                                style: Helper.getTheme(context).headline5,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  buidCategory(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Gần Đây",
-                          style: Helper.getTheme(context).headline5,
+                        SizedBox(
+                          height: 20,
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(RecentScreen.routeName);
-                          },
-                          child: Text("Tất cả"),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: Text("Giao đến"),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: Helper.getScreenWidth(context) * 0.8,
+                                  child: Text(
+                                    "${loggedInUser.address} ",
+                                    style: Helper.getTheme(context).headline4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        buidCategory(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Gần Đây",
+                                style: Helper.getTheme(context).headline5,
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pushNamed(RecentScreen.routeName);
+                                },
+                                child: Text("Tất cả"),
+                              ),
+                            ],
+                          ),
+                        ),
+                        buildRecentItem(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Phổ biến",
+                                style: Helper.getTheme(context).headline4,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        buildPopular(),
                       ],
                     ),
                   ),
-                  buildRecentItem(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Phổ biến",
-                          style: Helper.getTheme(context).headline4,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  buildPopular(),
-                ],
-              ),
+                ),
+                Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomNavBar(
+                      home: true,
+                    )),
+              ],
             ),
-          ),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              child: CustomNavBar(
-                home: true,
-              )),
-        ],
-      ),
     );
   }
 }

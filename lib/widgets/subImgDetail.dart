@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:monkey_app_demo/const/colors.dart';
 import 'package:monkey_app_demo/model/cart_model.dart';
 import 'package:monkey_app_demo/provider/favorite_provider.dart';
@@ -44,6 +45,7 @@ class SubImgDetail extends StatefulWidget {
 }
 
 class _SubImgDetailState extends State<SubImgDetail> {
+  var formatter = NumberFormat('##,000');
   bool isFavorite = false;
 
   int quantity = 1;
@@ -178,13 +180,14 @@ class _SubImgDetailState extends State<SubImgDetail> {
                                       height: 20,
                                     ),
                                     Text(
-                                      "${widget._oldPrice}K",
+                                      "${formatter.format(widget._oldPrice)}đ",
                                       style: TextStyle(
                                           decoration:
-                                              TextDecoration.lineThrough),
+                                              TextDecoration.lineThrough,
+                                          fontSize: 24),
                                     ),
                                     Text(
-                                      "${widget._price}K",
+                                      "${formatter.format(widget._price)}đ",
                                       style: TextStyle(
                                         color: AppColor.primary,
                                         fontSize: 30,
@@ -379,7 +382,7 @@ class _SubImgDetailState extends State<SubImgDetail> {
                                           height: 10,
                                         ),
                                         Text(
-                                          "${widget._price * quantity}K",
+                                          "${formatter.format(widget._price * quantity)}đ",
                                           style: TextStyle(
                                             color: AppColor.primary,
                                             fontWeight: FontWeight.bold,
