@@ -1,10 +1,7 @@
-# Food Delivery App - Flutter UI 
+# Food App Flutter
 
 Đây là đồ án báo cáo thực tập tốt nghiệp xây dựng Food App sử dụng Flutter và FireBase
 
-
-
-### Video Preview of Final UI
 
 ## Các chức năng bao gồm
 
