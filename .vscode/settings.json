@@ -1,0 +1,6 @@
+{
+    "cSpell.words": [
+        "formkey"
+    ],
+    "cmake.sourceDirectory": "${workspaceFolder}/linux"
+}
